@@ -65,6 +65,7 @@ public class Person {
 
 	public Person(long id, String firstName, String lastName, String address, Date daate) {
 		super();
+		
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
