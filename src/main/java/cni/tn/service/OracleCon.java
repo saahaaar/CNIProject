@@ -1,5 +1,6 @@
 package cni.tn.service;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,7 +16,7 @@ class OracleCon {
 
 			// step2 create the connection object
 			Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:oracle", "system", "oracle");
-			Connection con1 = DriverManager.getConnection("jdbc:postgresql://localhost:5434/cnii", "postgres",
+			Connection con1 = DriverManager.getConnection("jdbc:postgresql://localhost:5434/type_frais", "postgres",
 					"postgres");
 
 			// step3 create the statement object
@@ -23,19 +24,17 @@ class OracleCon {
 			Statement stmt1 = con1.createStatement();
 
 			// step4 execute query
-
-			ResultSet rs = stmt.executeQuery("select * from cnii");
+			ResultSet rs = stmt.executeQuery("select * from TYP_FRAIS");
 			PreparedStatement pstmt = con1
-					.prepareStatement("INSERT INTO cnii (id,nom,prenom,daate) VALUES (?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO type_frais (code,lib_lang1,lib_lang2) VALUES (?, ?, ?)");
 
 			while (rs.next()) {
-				pstmt.setInt(1, rs.getInt(1));
-				pstmt.setString(2, rs.getString(2));
-				pstmt.setString(3, rs.getString(3));
-				pstmt.setDate(4, rs.getDate(4));
+				pstmt.setString(1, conv(rs.getString(1)));
+				pstmt.setString(2, conv(rs.getString(2)));
+				pstmt.setString(3, conv(rs.getString(3)));
 				pstmt.executeUpdate();
 				System.out
-						.println(rs.getInt(1) + "  " + rs.getString(2) + "  " + rs.getString(3) + "  " + rs.getDate(4));
+						.println(rs.getString(1) + "  " + rs.getString(2) + "  " + rs.getString(3));
 			}
 
 			// step5 close the connection object
@@ -45,5 +44,18 @@ class OracleCon {
 			System.out.println(e);
 		}
 
+	}
+
+	static String conv(String s) throws UnsupportedEncodingException {
+		String data = "";
+		try {
+			byte[] sourceBytes = s.getBytes("iso-8859-1");
+			data = new String(sourceBytes, "windows-1256");
+			System.out.println(data);
+
+		} catch (UnsupportedOperationException e) {
+
+		}
+		return data;
 	}
 }
